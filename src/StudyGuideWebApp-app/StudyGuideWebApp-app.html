@@ -1,0 +1,148 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-drawer-panel/paper-drawer-panel.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/polymer-quill/polymer-quill.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
+
+<dom-module id="StudyGuideWebApp-app">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      paper-item {
+        margin: 0;
+        padding: 5%;
+        width: 90%;
+        height: 50px;
+        font-size: 20px;
+        background-color: rgba(200,200,200,0.2);
+      }
+
+      #menu-header {
+        height: 70px;
+        font-size: 30px;
+        margin: 0;
+        padding: 5%;
+        width: 90%;
+        background-color: rgba(255,255,255,0.5);
+      }
+
+      #menu {
+        background-color: rgb(200,200,200);
+        height:100vh;
+      }
+
+      polymer-quill {
+      }
+
+
+    </style>
+
+    <app-location route="{{route}}"></app-location>
+    <app-route
+        route="{{route}}"
+        pattern="/:page"
+        data="{{data}}"
+        tail="{{tail}}">
+    </app-route>
+
+
+
+    
+
+    <paper-drawer-panel>
+
+      <paper-header-panel drawer>
+        <div id='menu'>
+          <div id="menu-header"> Sections </div>
+          <paper-item> Section 1</paper-item>
+          <paper-item> Section 2</paper-item>
+          <paper-item> Section 3</paper-item>
+        </div>
+      </paper-header-panel>
+
+      <paper-header-panel main>
+        <paper-toolbar>
+          <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
+          <div> Study Guide Name </div>
+        </paper-toolbar>
+
+
+        <!-- iron-pages selects the view based on the active route -->
+        <iron-pages selected="[[routeData.view]]" attr-for-selected="name">
+          <my-profile-view name="profile" route="{{subroute}}"></my-profile-view>
+          <my-message-list-view name="messages" route="{{subroute}}"></my-message-list-view>
+          <my-detail-view name="detail" route="{{subroute}}"></my-detail-view>
+        </iron-pages>
+
+
+
+
+
+
+
+        <template is="dom-if" if="{{isEditing}}">
+          <br>
+          <div> Editing... </div>
+          <br>
+          <polymer-quill
+            content='{"ops":[{"insert":"Hello World! - Store as Delta"},{"attributes":{"header":2},"insert":"\n"}]}'
+            class="full"
+            store-as="html"
+            save-interval="1000"
+            toolbar-type="full"
+            on-change="handleQuillChange">
+          </polymer-quill>
+          <br>
+          <paper-button raised on-click='changeDisplay'> Save Changes </paper-button>
+          <paper-button raised> Cancel Changes </paper-button>
+          <br>
+        </template>
+
+        <div id="resultDom">
+          {{prop1}}
+        </div>
+
+      </paper-header-panel>
+
+    </paper-drawer-panel>
+
+
+
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'StudyGuideWebApp-app',
+
+      properties: {
+        prop1: {
+          type: String,
+          value: 'StudyGuideWebApp-app',
+        },
+        isEditing: {
+          type: Boolean,
+          value: true
+        }
+      },
+
+      handleQuillChange: function(e) {
+        this.prop1 = e.detail.content;
+      },
+
+      changeDisplay: function(e) {
+        this.isEditing = false;
+        this.$.resultDom.innerHTML = this.prop1;
+      }
+
+    });
+  </script>
+</dom-module>

@@ -1,0 +1,6 @@
+{
+  "name": "StudyGuideWebApp",
+  "short_name": "StudyGuideWebApp",
+  "start_url": "/",
+  "display": "standalone"
+}
