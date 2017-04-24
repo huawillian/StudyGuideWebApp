@@ -7,6 +7,11 @@
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/polymer-quill/polymer-quill.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/app-route/app-location.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 
 
 <dom-module id="StudyGuideWebApp-app">
@@ -39,32 +44,35 @@
         height:100vh;
       }
 
-      polymer-quill {
-      }
-
-
     </style>
+
+    <firebase-app auth-domain="studyguidemvp.firebaseapp.com"
+      database-url="https://studyguidemvp.firebaseio.com/"
+      api-key="AIzaSyCriXr4uO-J76FyNxQlX_pPdO9wLjbzomo">
+    </firebase-app>
+
+    <firebase-document
+      path="/guides"
+      data="{{noteData}}">
+    </firebase-document>
+
 
     <app-location route="{{route}}"></app-location>
     <app-route
         route="{{route}}"
-        pattern="/:page"
-        data="{{data}}"
+        pattern="/:page/:section"
+        data="{{routeData}}"
         tail="{{tail}}">
     </app-route>
-
-
-
-    
 
     <paper-drawer-panel>
 
       <paper-header-panel drawer>
         <div id='menu'>
           <div id="menu-header"> Sections </div>
-          <paper-item> Section 1</paper-item>
-          <paper-item> Section 2</paper-item>
-          <paper-item> Section 3</paper-item>
+          <template is="dom-repeat" items="{{sections}}">
+              <paper-item> {{item.sectionname}} </paper-item>
+          </template>
         </div>
       </paper-header-panel>
 
@@ -76,10 +84,8 @@
 
 
         <!-- iron-pages selects the view based on the active route -->
-        <iron-pages selected="[[routeData.view]]" attr-for-selected="name">
-          <my-profile-view name="profile" route="{{subroute}}"></my-profile-view>
-          <my-message-list-view name="messages" route="{{subroute}}"></my-message-list-view>
-          <my-detail-view name="detail" route="{{subroute}}"></my-detail-view>
+        <iron-pages selected="[[routeData.page]]" attr-for-selected="name" fallback-selection="invalidPage">
+          <div name='section'> Hi going to show data for {{routeData.section}} </div>
         </iron-pages>
 
 
@@ -110,6 +116,8 @@
           {{prop1}}
         </div>
 
+        <div>{{noteData}}</div>
+
       </paper-header-panel>
 
     </paper-drawer-panel>
@@ -131,7 +139,24 @@
         isEditing: {
           type: Boolean,
           value: true
+        },
+        noteData: {
+          type: String,
+          value: '',
+          observer: 'onNoteDataChange'
+        },
+        sections: {
+          type: Array,
+          value: []
+        },
+        guide: {
+          type: String,
+          value: 'Example Guide'
         }
+      },
+
+      ready: function(){
+        this.listen(this.$.menu, 'click', 'setSectionPage');
       },
 
       handleQuillChange: function(e) {
@@ -141,6 +166,21 @@
       changeDisplay: function(e) {
         this.isEditing = false;
         this.$.resultDom.innerHTML = this.prop1;
+      },
+
+      onNoteDataChange: function(newVal){
+        console.log(newVal);
+        if(!Array.isArray(newVal)) return;
+
+        this.set('pageData', newVal.find((obj) => obj.guidename == this.guide));
+        this.set('sections', this.pageData.sections);
+
+        console.log(this.pageData, this.sections, this.routeData);
+      },
+
+      setSectionPage: function(e){
+        console.log(e.target.innerText, this.route);
+        this.set('route.path', '/content/' + e.target.innerText);
       }
 
     });

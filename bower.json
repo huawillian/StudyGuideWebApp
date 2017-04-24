@@ -7,7 +7,8 @@
     "paper-item": "PolymerElements/paper-item#^1.2.2",
     "polymer-quill": "chuckh/polymer-quill#^1.2.3",
     "iron-pages": "PolymerElements/iron-pages#^1.0.9",
-    "app-route": "PolymerElements/app-route#^1.0.1"
+    "app-route": "PolymerElements/app-route#^1.0.1",
+    "polymerfire": "firebase/polymerfire#^0.11.1"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
