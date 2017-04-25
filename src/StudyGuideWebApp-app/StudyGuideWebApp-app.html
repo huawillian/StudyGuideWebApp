@@ -27,6 +27,15 @@
         display: block;
       }
 
+      .dark-primary-color    { background: #455A64; }
+      .default-primary-color { background: #607D8B; }
+      .light-primary-color   { background: #CFD8DC; }
+      .text-primary-color    { color: #FFFFFF; }
+      .accent-color          { background: #536DFE; }
+      .primary-text-color    { color: #212121; }
+      .secondary-text-color  { color: #757575; }
+      .divider-color         { border-color: #BDBDBD; }
+
       paper-item {
         margin: 0;
         padding: 5%;
@@ -37,10 +46,11 @@
 
       #menu-header {
         height: 70px;
-        font-size: 30px;
+        font-size: 50px;
         margin: 0;
         padding: 5%;
         width: 90%;
+        margin-top: 30px;
       }
 
       #menu {
@@ -57,7 +67,6 @@
       }
 
       paper-toolbar {
-        background-color: #81C784;
         color: white;
       }
 
@@ -87,11 +96,11 @@
       }
 
       iron-selector > paper-item:hover {
-        background-color: #FFAB40;
+        background-color: #536DFE;
       }
 
       .iron-selected {
-        background-color: #FFAB40;
+        background-color: #536DFE;
       }
     </style>
 
@@ -145,7 +154,7 @@
 
       <paper-header-panel drawer id='menu'>
         <div>
-          <div id="menu-header"> Cards </div>
+          <h1 id="menu-header"> Cards </h1>
           <hr>
           <template is="dom-repeat" items="{{sections}}">
               <paper-item> {{item.sectionname}} </paper-item>
@@ -157,9 +166,9 @@
       </paper-header-panel>
 
       <paper-header-panel main>
-        <paper-toolbar>
+        <paper-toolbar class="dark-primary-color text-primary-color ">
           <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
-          <div> {{title}} </div>
+          <h3> {{title}} </h3>
         </paper-toolbar>
 
 

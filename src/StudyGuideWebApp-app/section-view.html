@@ -11,12 +11,20 @@
         display: block;
       }
 
+      .dark-primary-color    { background: #455A64; }
+      .default-primary-color { background: #607D8B; }
+      .light-primary-color   { background: #CFD8DC; }
+      .text-primary-color    { color: #FFFFFF; }
+      .accent-color          { background: #536DFE; }
+      .primary-text-color    { color: #212121; }
+      .secondary-text-color  { color: #757575; }
+      .divider-color         { border-color: #BDBDBD; }
+
       .container {
         padding-top: 100px;
         padding-left: 10%;
         padding-right: 10%;
         padding-bottom: 100px;
-        background-color: #C8E6C9;
         min-height: 60vh;
       }
 
@@ -26,26 +34,33 @@
         padding: 50px;
       }
 
+      paper-button {
+        padding-top: 10px;
+        padding-bottom: 10px;
+        border-radius: 30px;
+        margin-top: 40px;
+      }
       #editButton {
         position: absolute;
         right:40px;
         top: 80px;
-        background-color: #9C27B0;
-        color: white;
       }
 
     </style>
 
-    <div class='container'>
+    <div class='container light-primary-color'>
       <paper-material elevation="5">
         <h1>  {{title}} </h1>
-        <paper-button raised id="editButton"> Edit </paper-button>
+        <iron-collapse id='editButtonCollapse'>
+          <paper-button raised id="editButton" elevation="10" class="accent-color text-primary-color"> Edit </paper-button>
+        </iron-collapse>
+
         <h5>  {{description}} </h5>
         <hr>
         <iron-collapse id="editArea"></iron-collapse>
         <iron-collapse id='editButtons'>
-          <paper-button raised id="saveButton"> Save Changes </paper-button>
-          <paper-button raised id="cancelButton"> Cancel Changes </paper-button>
+          <paper-button raised id="saveButton" elevation="10" class="accent-color text-primary-color"> Save Changes </paper-button>
+          <paper-button raised id="cancelButton" elevation="10" class="accent-color text-primary-color"> Cancel Changes </paper-button>
         </iron-collapse>
         <div id="resultDom"></div>
       </paper-material>
@@ -93,6 +108,7 @@
       editHandler: function(e) {
         this.$.editArea.show();
         this.$.editButtons.show();
+        this.$.editButtonCollapse.hide();
         this.$.resultDom.innerHTML = '';
         this.setQuillContent(this.content);
       },
@@ -104,6 +120,7 @@
         this.set('content', this.quillContent);
         this.$.editArea.hide();
         this.$.editButtons.hide();
+        this.$.editButtonCollapse.show();
         this.fire('saveToDatabase', {content: this.quillContent});
       },
 
@@ -111,6 +128,7 @@
         this.$.resultDom.innerHTML = this.content;
         this.$.editArea.hide();
         this.$.editButtons.hide();
+        this.$.editButtonCollapse.show();
       },
 
       onDataChanged: function(newVal) {
@@ -120,6 +138,7 @@
         this.$.resultDom.innerHTML = this.content;
         this.$.editArea.hide();
         this.$.editButtons.hide();
+        this.$.editButtonCollapse.show();
         this.title = newVal.sectionname;
         this.description = newVal.description;
       },
