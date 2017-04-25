@@ -81,10 +81,8 @@ app.delete('/api/card', function(req, res) {
 });
 
 
-
-
 // -------------- Listen Init ------------------
 
-app.listen(8000, function() {
-  console.log('Shortly is listening on 8000');
+app.listen(process.env.PORT || 8000, function() {
+  console.log('Shortly is listening on', process.env.PORT || 8000);
 });

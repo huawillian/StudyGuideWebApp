@@ -1,22 +1,17 @@
 {
-  "name": "studyguide",
+  "name": "studyguideserver",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "directories": {
-    "test": "test"
-  },
   "scripts": {
-    "start": "node server/index.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/huawillian/StudyGuideWebApp.git"
+    "start": "node index.js"
   },
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/huawillian/StudyGuideWebApp/issues"
-  },
-  "homepage": "https://github.com/huawillian/StudyGuideWebApp#readme"
+  "dependencies": {
+    "body-parser": "^1.17.1",
+    "express": "^4.15.2",
+    "firebase-rest": "^1.0.0",
+    "morgan": "^1.8.1"
+  }
 }
