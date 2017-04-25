@@ -112,7 +112,7 @@
     <paper-dialog id='cardDialog' modal>
       <h1>Create New Card</h1>
       <paper-input always-float-label label="Title" value={{cardTitle}}></paper-input>
-      <paper-input always-float-label label="Description" value={{cardDescription}}></paper-input>
+      <paper-input always-float-label label="Content" value={{cardDescription}}></paper-input>
 
       <div class="buttons" style="margin-top:30px">
         <paper-button dialog-dismiss> Cancel</paper-button>
@@ -223,13 +223,8 @@
       },
 
       createCardHandler: function(){
-        console.log(this.cardTitle, this.cardDescription);
-        this.sections.push({sectionname: this.cardTitle, description: this.cardDescription, content: 'Edit me!'});
-        this.set('sections', this.sections);
-        this.$.doc.data = $.extend(true, {}, this.noteData);
-        this.set('route.path', '/content/' + this.cardTitle);
-        this.$.doc.path = '';
-        this.$.doc.path = '/guides';
+        var tempData = {cardname: this.cardTitle, carddescription: this.cardDescription};
+        this.createCard(tempData);
         this.$.drawer.closeDrawer();
       },
 
@@ -279,16 +274,37 @@
       },
 
       updateCard: function(content) {
-        console.log(this.sectionData);
+        var data = {cardid: this.sectionData.id, carddescription: content};
+        console.log(JSON.stringify(data));
         $.ajax({
           url: 'https://secure-scrubland-91570.herokuapp.com/api/card',
           type: 'PATCH',
           dataType: 'json',
-          data:  JSON.stringify({cardid: this.sectionData.id, carddescription: content}),
+          //{"cardid":"-Ki_CvHPhxZbFUsgvNEk","carddescription":"AHH this is some text of a card :0"}
+          data:  data,
           crossDomain: true,
           success: function (data, textStatus, xhr) {
             console.log(data);
-            
+            this.retrieveData();
+          }.bind(this),
+          error: function (xhr, textStatus, errorThrown) {
+            console.log(errorThrown);
+          }
+        });
+      },
+
+      createCard: function(obj) {
+        console.log('sending create', obj);
+        $.ajax({
+          url: 'https://secure-scrubland-91570.herokuapp.com/api/card',
+          type: 'POST',
+          dataType: 'json',
+          //{"cardid":"-Ki_CvHPhxZbFUsgvNEk","carddescription":"AHH this is some text of a card :0"}
+          data:  obj,
+          crossDomain: true,
+          success: function (data, textStatus, xhr) {
+            console.log(data);
+            this.retrieveData();
           }.bind(this),
           error: function (xhr, textStatus, errorThrown) {
             console.log(errorThrown);

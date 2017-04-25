@@ -83,7 +83,7 @@ app.post('/api/card', function(req, res) {
   }
 
   jsonClient.post('/cards', req.body)
-  .then(result => res.status(res.status || 201).send(result.body));
+  .then(result => res.status(201).send(result.body));
 });
 
 // update a card, req query params: cardid and body: {cardsdescription: "some content"}
