@@ -230,14 +230,9 @@
 
       removeCardHandler: function() {
         var removeArr = this.$.multiRemove.selectedValues;
-        removeArr = removeArr.sort(function(a,b) { return b - a});
+        removeArr = removeArr.map(idx => this.sections[idx].id);
         console.log(removeArr);
-        removeArr.forEach(idx => this.sections.splice(idx, 1));
-        this.set('sections', this.sections);
-        this.$.doc.data = $.extend(true, {}, this.noteData);
-        this.set('route.path', '/content/' + this.cardTitle);
-        this.$.doc.path = '';
-        this.$.doc.path = '/guides';
+        removeArr.forEach(id => this.removeCard({cardid: id}));
         this.$.drawer.closeDrawer();
       },
 
@@ -310,8 +305,26 @@
             console.log(errorThrown);
           }
         });
-      }
+      },
 
+      removeCard: function(obj) {
+        console.log('removing create', obj);
+        $.ajax({
+          url: 'https://secure-scrubland-91570.herokuapp.com/api/card',
+          type: 'DELETE',
+          dataType: 'json',
+          //{"cardid":"-Ki_CvHPhxZbFUsgvNEk","carddescription":"AHH this is some text of a card :0"}
+          data:  obj,
+          crossDomain: true,
+          success: function (data, textStatus, xhr) {
+            console.log(data);
+            this.retrieveData();
+          }.bind(this),
+          error: function (xhr, textStatus, errorThrown) {
+            console.log(errorThrown);
+          }
+        });
+      }
 
     });
   </script>

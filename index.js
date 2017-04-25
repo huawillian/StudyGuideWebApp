@@ -100,17 +100,17 @@ app.patch('/api/card', function(req, res) {
   .then(result => res.status(201).send(result.body));
 });
 
-// remove/delete a card, req query params: cardid
+// remove/delete a card, req body cardid
 // respond with success or null
 app.delete('/api/card', function(req, res) {
-  console.log('attempting to delete card', req.query.cardid);
+  console.log('attempting to delete card', req.body.cardid);
 
-  if(req.query.cardid === undefined || req.query.cardid.charAt(0) != "-") {
-    res.status(500).send('invalid data to /api/card ' + req.query.cardid)   
+  if(req.body.cardid === undefined || req.body.cardid.charAt(0) != "-") {
+    res.status(500).send('invalid data to /api/card ' + req.body.cardid)   
     return;
   }
 
-  jsonClient.delete('/cards/' + req.query.cardid)
+  jsonClient.delete('/cards/' + req.body.cardid)
   .then(result => res.status(201).send(result.body));
 });
 
