@@ -227,14 +227,18 @@
       createCardHandler: function(){
         var tempData = {cardname: this.cardTitle, carddescription: this.cardDescription};
         this.createCard(tempData);
+        this.cardTitle = "";
+        this.cardDescription = "";
         this.$.drawer.closeDrawer();
       },
 
       removeCardHandler: function() {
         var removeArr = this.$.multiRemove.selectedValues;
+        this.$.multiRemove.selectedValues
         removeArr = removeArr.map(idx => this.sections[idx].id);
         console.log(removeArr);
         removeArr.forEach(id => this.removeCard({cardid: id}));
+        this.$.multiRemove.selectedValues = [];
         this.$.drawer.closeDrawer();
       },
 
