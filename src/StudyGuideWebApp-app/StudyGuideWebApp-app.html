@@ -200,7 +200,7 @@
         this.listen(this.$.removeCardButton, 'click', 'removeCardHandler');
 
         $.ajax({
-          url: 'api/cards',
+          url: 'http://localhost:8000/api/cards',
           type: 'GET',
           dataType: 'json',
           headers: {
