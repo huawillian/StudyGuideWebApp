@@ -89,7 +89,7 @@ app.post('/api/card', function(req, res) {
 // update a card, req query params: cardid and body: {cardsdescription: "some content"}
 // respond with id, or null
 app.patch('/api/card', function(req, res) {
-  console.log('attempting to update new card', req.body.cardid, 'with', req.body.carddescription);
+  console.log('attempting to update new card', req.body, 'body', req.body.cardid, 'with', req.body.carddescription);
 
   if(req.body.cardid === undefined || req.body.cardid.charAt(0) != "-") {
     res.status(500).send('invalid data to /api/card ' + req.query.cardid)   
