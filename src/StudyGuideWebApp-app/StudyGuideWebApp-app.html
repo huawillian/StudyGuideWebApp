@@ -101,7 +101,7 @@
       }
     </style>
 
-    <app-location route="{{route}}"></app-location>
+    <app-location route="{{route}}" use-hash-as-path></app-location>
     <app-route
         route="{{route}}"
         pattern="/:page/:section"
@@ -158,10 +158,7 @@
         </paper-toolbar>
 
 
-        <!-- iron-pages selects the view based on the active route -->
-        <iron-pages selected="[[routeData.page]]" attr-for-selected="name" fallback-selection="invalidPage">
-          <div name='content'> <section-view data={{sectionData}}> </section-view> </div>
-        </iron-pages>
+      <section-view data={{sectionData}}> </section-view> 
 
       </paper-header-panel>
 
@@ -177,20 +174,14 @@
       is: 'StudyGuideWebApp-app',
 
       properties: {
-        noteData: {
-          type: String,
-          value: '',
-          observer: 'onNoteDataChange'
-        },
         sections: {
           type: Array,
           value: []
         },
-        guide: {
+        title: {
           type: String,
-          value: 'Example Guide'
+          value: 'Example Study Guide'
         },
-        title: String,
         sectionData: Object
       },
 
@@ -198,38 +189,11 @@
         this.listen(this.$.menu, 'click', 'setSectionPage');
         this.listen(this.$.createCardButton, 'click', 'createCardHandler');
         this.listen(this.$.removeCardButton, 'click', 'removeCardHandler');
-
-        $.ajax({
-          url: 'api/cards',
-          type: 'GET',
-          dataType: 'json',
-          headers: {
-            //WRITE IF THEIR HAVE SOME HEADER REQUEST OR DATA
-          },
-          crossDomain: true,
-          success: function (data, textStatus, xhr) {
-            console.log(data);
-          },
-          error: function (xhr, textStatus, errorThrown) {
-            console.log(errorThrown);
-          }
-        });
+        this.retrieveData();
       },
 
       listeners: {
           'saveToDatabase': 'handleSaveToDatabase',
-      },
-
-      onNoteDataChange: function(newVal){
-        console.log(newVal);
-        if(!Array.isArray(newVal) || newVal === undefined) return;
-
-        this.set('pageData', newVal.find((obj) => obj.guidename == this.guide));
-        this.set('sections', this.pageData.sections);
-        this.set('sectionData', this.sections.find((obj) => obj.sectionname == this.routeData.section));
-        this.set('title', this.pageData.guidename);
-
-        console.log(this.pageData, this.sections, this.routeData);
       },
 
       setSectionPage: function(e){
@@ -248,14 +212,14 @@
 
         this.set('route.path', '/content/' + e.target.innerText);
         this.set('sectionData', this.sections.find((obj) => obj.sectionname == e.target.innerText));
+        console.log(this.sectionData);
         this.$.drawer.closeDrawer();
       },
 
       handleSaveToDatabase: function(data){
         console.log(data.detail);
         this.sectionData.content = data.detail.content;
-        console.log(this.noteData);
-        this.$.doc.data = $.extend(true, {}, this.noteData);
+        this.updateCard(this.sectionData.content);
       },
 
       createCardHandler: function(){
@@ -284,6 +248,52 @@
 
       handleResponse: function(e) {
         console.log(this, e);
+      },
+
+      retrieveData: function() {
+        $.ajax({
+          url: 'https://secure-scrubland-91570.herokuapp.com/api/cards',
+          type: 'GET',
+          dataType: 'json',
+          headers: {
+            //WRITE IF THEIR HAVE SOME HEADER REQUEST OR DATA
+          },
+          crossDomain: true,
+          success: function (data, textStatus, xhr) {
+            console.log(data);
+            var tempData = [];
+
+            for(var key in data) {
+              tempData.push({id: key, sectionname: data[key].cardname, content: data[key].carddescription});
+            }
+
+            this.set('sections', []);
+            this.set('sections', tempData);
+            console.log(this.sections);
+
+          }.bind(this),
+          error: function (xhr, textStatus, errorThrown) {
+            console.log(errorThrown);
+          }
+        });
+      },
+
+      updateCard: function(content) {
+        console.log(this.sectionData);
+        $.ajax({
+          url: 'https://secure-scrubland-91570.herokuapp.com/api/card',
+          type: 'PATCH',
+          dataType: 'json',
+          data:  JSON.stringify({cardid: this.sectionData.id, carddescription: content}),
+          crossDomain: true,
+          success: function (data, textStatus, xhr) {
+            console.log(data);
+            
+          }.bind(this),
+          error: function (xhr, textStatus, errorThrown) {
+            console.log(errorThrown);
+          }
+        });
       }
 
 
