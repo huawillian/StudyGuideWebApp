@@ -13,9 +13,6 @@ app.use(bodyParser.urlencoded({
 
 app.use(bodyParser.json());
 
-
-
-
 app.all('*', function(req, res,next) {
     /**
      * Response settings
@@ -50,6 +47,7 @@ app.all('*', function(req, res,next) {
 // CURRENTLY HOSTED ON HEROKU https://secure-scrubland-91570.herokuapp.com
 // e.g. https://secure-scrubland-91570.herokuapp.com/api/cards
 // -------------- Handlers ------------------
+app.use(express.static('build/bundled'))
 
 // get card, req cardid, or card cardname
 // respond with card object
