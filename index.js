@@ -3,15 +3,16 @@ var bodyParser = require('body-parser');
 var morgan = require('morgan');
 const FirebaseREST = require('firebase-rest').default;
 var jsonClient = new FirebaseREST.JSONClient('https://studyguidemvp.firebaseio.com/');
+var cors = require('cors');
 
 var app = express();
 
+app.use(cors())
 app.use(morgan("combined"));
 app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.use(bodyParser.json());
-
 
 // CURRENTLY HOSTED ON HEROKU https://secure-scrubland-91570.herokuapp.com
 // e.g. https://secure-scrubland-91570.herokuapp.com/api/cards
