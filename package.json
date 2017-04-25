@@ -1,0 +1,22 @@
+{
+  "name": "studyguide",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "start": "node server/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/huawillian/StudyGuideWebApp.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/huawillian/StudyGuideWebApp/issues"
+  },
+  "homepage": "https://github.com/huawillian/StudyGuideWebApp#readme"
+}
