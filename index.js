@@ -12,8 +12,10 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-// -------------- Handlers ------------------
 
+// CURRENTLY HOSTED ON HEROKU https://secure-scrubland-91570.herokuapp.com
+// e.g. https://secure-scrubland-91570.herokuapp.com/api/cards
+// -------------- Handlers ------------------
 
 // get card, req cardid, or card cardname
 // respond with card object
