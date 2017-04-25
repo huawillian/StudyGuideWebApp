@@ -12,7 +12,13 @@
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-app.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
 
+<!-- custom elements here -->
+<link rel="import" href="./section-view.html">
 
 <dom-module id="StudyGuideWebApp-app">
   <template>
@@ -27,7 +33,6 @@
         width: 90%;
         height: 50px;
         font-size: 20px;
-        background-color: rgba(200,200,200,0.2);
       }
 
       #menu-header {
@@ -36,14 +41,58 @@
         margin: 0;
         padding: 5%;
         width: 90%;
-        background-color: rgba(255,255,255,0.5);
       }
 
       #menu {
-        background-color: rgb(200,200,200);
-        height:100vh;
+        min-height:100vh;
+        height: 100%;
       }
 
+      paper-header-panel { 
+        height: 100%;
+      }
+
+      paper-drawer-panel{
+        overflow: scroll;
+      }
+
+      paper-toolbar {
+        background-color: #81C784;
+        color: white;
+      }
+
+      #add {
+        margin-right: 10px;
+      }
+
+      #remove {
+        margin-right: 10px;
+      }
+
+      paper-item:hover{
+        background-color: rgba(0,0,0,0.1);
+        cursor:pointer;
+      }
+
+      paper-dialog {
+        width:75%;
+        min-width: 300px;
+        height: 75%;
+        min-height: 300px;
+      }
+
+      iron-selector > paper-item {
+        padding-top: 5px;
+        padding-bottom: 5px
+      }
+
+      iron-selector > paper-item:hover {
+        background-color: #FFAB40;
+      }
+
+      .iron-selected {
+        background-color: #FFAB40;
+      }
     </style>
 
     <firebase-app auth-domain="studyguidemvp.firebaseapp.com"
@@ -51,7 +100,7 @@
       api-key="AIzaSyCriXr4uO-J76FyNxQlX_pPdO9wLjbzomo">
     </firebase-app>
 
-    <firebase-document
+    <firebase-document id='doc'
       path="/guides"
       data="{{noteData}}">
     </firebase-document>
@@ -65,58 +114,59 @@
         tail="{{tail}}">
     </app-route>
 
-    <paper-drawer-panel>
+    <paper-dialog id='cardDialog' modal>
+      <h1>Create New Card</h1>
+      <paper-input always-float-label label="Title" value={{cardTitle}}></paper-input>
+      <paper-input always-float-label label="Description" value={{cardDescription}}></paper-input>
 
-      <paper-header-panel drawer>
-        <div id='menu'>
-          <div id="menu-header"> Sections </div>
+      <div class="buttons" style="margin-top:30px">
+        <paper-button dialog-dismiss> Cancel</paper-button>
+        <paper-button dialog-confirm autofocus id='createCardButton'> Create</paper-button>
+      </div>
+    </paper-dialog>
+
+    <paper-dialog id='removeDialog' modal>
+      <h1>Remove Cards</h1>
+      <paper-dialog-scrollable>
+        <iron-selector multi id='multiRemove'>
           <template is="dom-repeat" items="{{sections}}">
               <paper-item> {{item.sectionname}} </paper-item>
           </template>
+        </iron-selector>
+      </paper-dialog-scrollable>
+
+      <div class="buttons" style="margin-top:30px">
+        <paper-button dialog-dismiss> Cancel</paper-button>
+        <paper-button dialog-confirm autofocus id='removeCardButton'> Remove </paper-button>
+      </div>
+    </paper-dialog>
+
+    <paper-drawer-panel id='drawer'>
+
+      <paper-header-panel drawer id='menu'>
+        <div>
+          <div id="menu-header"> Cards </div>
+          <hr>
+          <template is="dom-repeat" items="{{sections}}">
+              <paper-item> {{item.sectionname}} </paper-item>
+          </template>
+          <hr>
+          <paper-item> <iron-icon id='add' icon="add"></iron-icon> New Card </paper-item>
+          <paper-item> <iron-icon id='remove' icon="remove"></iron-icon> Remove Card </paper-item>
         </div>
       </paper-header-panel>
 
       <paper-header-panel main>
         <paper-toolbar>
           <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
-          <div> Study Guide Name </div>
+          <div> {{title}} </div>
         </paper-toolbar>
 
 
         <!-- iron-pages selects the view based on the active route -->
         <iron-pages selected="[[routeData.page]]" attr-for-selected="name" fallback-selection="invalidPage">
-          <div name='section'> Hi going to show data for {{routeData.section}} </div>
+          <div name='content'> <section-view data={{sectionData}}> </section-view> </div>
         </iron-pages>
-
-
-
-
-
-
-
-        <template is="dom-if" if="{{isEditing}}">
-          <br>
-          <div> Editing... </div>
-          <br>
-          <polymer-quill
-            content='{"ops":[{"insert":"Hello World! - Store as Delta"},{"attributes":{"header":2},"insert":"\n"}]}'
-            class="full"
-            store-as="html"
-            save-interval="1000"
-            toolbar-type="full"
-            on-change="handleQuillChange">
-          </polymer-quill>
-          <br>
-          <paper-button raised on-click='changeDisplay'> Save Changes </paper-button>
-          <paper-button raised> Cancel Changes </paper-button>
-          <br>
-        </template>
-
-        <div id="resultDom">
-          {{prop1}}
-        </div>
-
-        <div>{{noteData}}</div>
 
       </paper-header-panel>
 
@@ -132,14 +182,6 @@
       is: 'StudyGuideWebApp-app',
 
       properties: {
-        prop1: {
-          type: String,
-          value: 'StudyGuideWebApp-app',
-        },
-        isEditing: {
-          type: Boolean,
-          value: true
-        },
         noteData: {
           type: String,
           value: '',
@@ -152,36 +194,83 @@
         guide: {
           type: String,
           value: 'Example Guide'
-        }
+        },
+        title: String,
+        sectionData: Object
       },
 
       ready: function(){
         this.listen(this.$.menu, 'click', 'setSectionPage');
+        this.listen(this.$.createCardButton, 'click', 'createCardHandler');
+        this.listen(this.$.removeCardButton, 'click', 'removeCardHandler');
       },
 
-      handleQuillChange: function(e) {
-        this.prop1 = e.detail.content;
-      },
-
-      changeDisplay: function(e) {
-        this.isEditing = false;
-        this.$.resultDom.innerHTML = this.prop1;
+      listeners: {
+          'saveToDatabase': 'handleSaveToDatabase',
       },
 
       onNoteDataChange: function(newVal){
         console.log(newVal);
-        if(!Array.isArray(newVal)) return;
+        if(!Array.isArray(newVal) || newVal === undefined) return;
 
         this.set('pageData', newVal.find((obj) => obj.guidename == this.guide));
         this.set('sections', this.pageData.sections);
+        this.set('sectionData', this.sections.find((obj) => obj.sectionname == this.routeData.section));
+        this.set('title', this.pageData.guidename);
 
         console.log(this.pageData, this.sections, this.routeData);
       },
 
       setSectionPage: function(e){
         console.log(e.target.innerText, this.route);
+        console.log(e.target.innerText);
+
+        if(e.target.innerText == 'Cards') return;
+        if(e.target.innerText.includes('New Card')) {
+          this.$.cardDialog.open();
+          return;
+        };
+        if(e.target.innerText.includes('Remove Card')) {
+          this.$.removeDialog.open();
+          return;
+        };
+
         this.set('route.path', '/content/' + e.target.innerText);
+        this.set('sectionData', this.sections.find((obj) => obj.sectionname == e.target.innerText));
+        this.$.drawer.closeDrawer();
+      },
+
+      handleSaveToDatabase: function(data){
+        console.log(data.detail);
+        this.sectionData.content = data.detail.content;
+        console.log(this.noteData);
+        this.$.doc.data = $.extend(true, {}, this.noteData);
+      },
+
+      createCardHandler: function(){
+        console.log(this.cardTitle, this.cardDescription);
+        this.sections.push({sectionname: this.cardTitle, description: this.cardDescription, content: 'Edit me!'});
+        this.set('sections', this.sections);
+        this.$.doc.data = $.extend(true, {}, this.noteData);
+        this.set('route.path', '/content/' + this.cardTitle);
+        this.$.doc.path = '';
+        this.$.doc.path = '/guides';
+        this.$.drawer.closeDrawer();
+      },
+
+      removeCardHandler: function() {
+        var removeArr = this.$.multiRemove.selectedValues;
+        removeArr = removeArr.sort(function(a,b) { return b - a});
+        console.log(removeArr);
+        removeArr.forEach(idx => this.sections.splice(idx, 1));
+        this.set('sections', this.sections);
+        this.$.doc.data = $.extend(true, {}, this.noteData);
+        this.set('route.path', '/content/' + this.cardTitle);
+        this.$.doc.path = '';
+        this.$.doc.path = '/guides';
+        this.$.drawer.closeDrawer();
       }
+
 
     });
   </script>

@@ -1,0 +1,135 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer-quill/polymer-quill.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-collapse/iron-collapse.html">
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+
+<dom-module id="section-view">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      .container {
+        padding-top: 100px;
+        padding-left: 10%;
+        padding-right: 10%;
+        padding-bottom: 100px;
+        background-color: #C8E6C9;
+        min-height: 60vh;
+      }
+
+      paper-material {
+        max-width: 700px;
+        background-color: white;
+        padding: 50px;
+      }
+
+      #editButton {
+        position: absolute;
+        right:40px;
+        top: 80px;
+        background-color: #9C27B0;
+        color: white;
+      }
+
+    </style>
+
+    <div class='container'>
+      <paper-material elevation="5">
+        <h1>  {{title}} </h1>
+        <paper-button raised id="editButton"> Edit </paper-button>
+        <h5>  {{description}} </h5>
+        <hr>
+        <iron-collapse id="editArea"></iron-collapse>
+        <iron-collapse id='editButtons'>
+          <paper-button raised id="saveButton"> Save Changes </paper-button>
+          <paper-button raised id="cancelButton"> Cancel Changes </paper-button>
+        </iron-collapse>
+        <div id="resultDom"></div>
+      </paper-material>
+    </div>
+
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'section-view',
+
+      properties: {
+        content: {
+          type: String,
+          value: '',
+        },
+        data: {
+          type: Object,
+          observer: 'onDataChanged'
+        },
+        isEditing: {
+          type: Boolean,
+          value: false,
+        },
+        quillContent: {
+          type: String,
+          value: ''
+        },
+        title: String,
+        description: String,
+      },
+
+      ready: function(){
+        this.listen(this.$.editButton, 'click', 'editHandler');
+        this.listen(this.$.saveButton, 'click', 'saveHandler');
+        this.listen(this.$.cancelButton, 'click', 'cancelHandler');
+      },
+
+      handleQuillChange: function(e) {
+        this.quillContent = e.detail.content;
+        console.log(this.quillContent);
+      },
+
+      editHandler: function(e) {
+        this.$.editArea.show();
+        this.$.editButtons.show();
+        this.$.resultDom.innerHTML = '';
+        this.setQuillContent(this.content);
+      },
+
+      saveHandler: function(e) {
+        console.log($('#quill').find('#editor').children()[0].innerHTML);
+        this.set('quillContent', $('#quill').find('#editor').children()[0].innerHTML);
+        this.$.resultDom.innerHTML = this.quillContent;
+        this.set('content', this.quillContent);
+        this.$.editArea.hide();
+        this.$.editButtons.hide();
+        this.fire('saveToDatabase', {content: this.quillContent});
+      },
+
+      cancelHandler: function(e) {
+        this.$.resultDom.innerHTML = this.content;
+        this.$.editArea.hide();
+        this.$.editButtons.hide();
+      },
+
+      onDataChanged: function(newVal) {
+        console.log('onDataChanged', newVal);
+        if(newVal === undefined) return;
+        this.set('content', newVal.content);
+        this.$.resultDom.innerHTML = this.content;
+        this.$.editArea.hide();
+        this.$.editButtons.hide();
+        this.title = newVal.sectionname;
+        this.description = newVal.description;
+      },
+
+      setQuillContent: function(str) {
+        $(this.$.editArea).empty();
+        var dynamicEl = $('<polymer-quill id="quill" content="' + str + '"class="full"store-as="html"save-interval="1000"toolbar-type="full"on-change="handleQuillChange"></polymer-quill>');
+        this.quillContent = str;
+        $(this.$.editArea).append(dynamicEl);
+      },
+    });
+  </script>
+</dom-module>
