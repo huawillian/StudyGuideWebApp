@@ -13,6 +13,7 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.use(bodyParser.json());
+app.use(express.static('build/bundled'))
 
 // CURRENTLY HOSTED ON HEROKU https://secure-scrubland-91570.herokuapp.com
 // e.g. https://secure-scrubland-91570.herokuapp.com/api/cards
